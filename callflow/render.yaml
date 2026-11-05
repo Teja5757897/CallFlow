@@ -1,0 +1,53 @@
+# Render Blueprint: Render reads this file and creates the web service from the Dockerfile.
+# Secrets are marked "sync: false", so Render asks you for them in the dashboard and they
+# are never stored in GitHub. Change any value later under Environment, and Render restarts the app.
+services:
+  - type: web
+    name: callflow
+    runtime: docker
+    plan: free            # use "starter" for real use: free plans sleep and may block email
+    healthCheckPath: /api/health
+    envVars:
+      # --- Required ---
+      - key: MONGODB_URI          # MongoDB Atlas connection string
+        sync: false
+      - key: JWT_SECRET           # long random text
+        generateValue: true
+      - key: PUBLIC_URL           # your Render address, e.g. https://callflow.onrender.com
+        sync: false
+      - key: CLIENT_ORIGIN        # same as PUBLIC_URL
+        sync: false
+      # --- Calling (CALL-E) ---
+      - key: CALLE_MOCK           # true = fake calls, false = real calls
+        value: "true"
+      - key: CALLE_API_KEY
+        sync: false
+      - key: CALLE_API_BASE
+        value: https://api.heycall-e.com
+      - key: CALLE_WEBHOOK_SECRET
+        generateValue: true
+      # --- Payments ---
+      - key: PAYMENTS_DEMO        # true = demo payments, false = off (ignored once Razorpay keys are set)
+        value: "true"
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: USD_TO_INR
+        value: "88"
+      - key: PRICE_MARKUP_PERCENT
+        value: "0"
+      # --- Plans and admins ---
+      - key: TRIAL_CALL_LIMIT
+        value: "5"
+      # --- Email ---
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: EMAIL_FROM
+        sync: false

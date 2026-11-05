@@ -1,0 +1,26 @@
+# Runs the app and its MongoDB database together:  docker compose up --build
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      - mongo
+    ports:
+      - "4000:4000"
+    env_file:
+      - .env
+    environment:
+      PORT: 4000
+      MONGODB_URI: mongodb://mongo:27017/callflow   # overrides the value in .env
+    volumes:
+      - uploads:/app/data/uploads
+
+volumes:
+  mongo-data:
+  uploads:
